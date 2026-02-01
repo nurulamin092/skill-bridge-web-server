@@ -12,3 +12,108 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum Role {
+  STUDENT
+  TUTOR
+  ADMIN
+}
+
+enum BookingStatus {
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+model TutorProfile {
+  id         String  @id @default(uuid())
+  userId     String  @unique
+  bio        String?
+  hourlyRate Float
+  experience Int
+  avgRating  Float   @default(0)
+  isApproved Boolean @default(false)
+
+  tutorCategories TutorCategory[]
+  availabilities  Availability[]
+  bookings        Booking[]
+  reviews         Review[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isApproved])
+}
+
+model Category {
+  id   String @id @default(uuid())
+  name String @unique
+  slug String @unique
+
+  tutors TutorCategory[]
+
+  createdAt DateTime @default(now())
+}
+
+model TutorCategory {
+  tutorId    String
+  categoryId String
+
+  tutor    TutorProfile @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  category Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([tutorId, categoryId])
+}
+
+model Availability {
+  id        String   @id @default(uuid())
+  tutorId   String
+  startTime DateTime
+  endTime   DateTime
+  isBooked  Boolean  @default(false)
+  bookingId String?  @unique
+
+  tutor     TutorProfile @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  booking   Booking?
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@index([tutorId, startTime, endTime])
+}
+
+model Booking {
+  id             String        @id @default(uuid())
+  studentId      String
+  tutorProfileId String
+  availabilityId String        @unique
+  status         BookingStatus @default(CONFIRMED)
+  priceSnapshot  Float
+
+  tutor TutorProfile @relation(fields: [tutorProfileId], references: [id])
+
+  availability Availability @relation(fields: [availabilityId], references: [id])
+  review       Review?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cancelReason String?
+  cancelledBy  Role?
+
+  @@index([status])
+}
+
+model Review {
+  id        String @id @default(uuid())
+  rating    Int
+  comment   String
+  tutorId   String
+  studentId String
+  bookingId String @unique
+
+  tutor   TutorProfile @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  booking Booking      @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}

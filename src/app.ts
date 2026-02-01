@@ -1,6 +1,7 @@
 import express, { Application, Request, Response } from "express";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth";
+import { errorHandler } from "./middleware/globalErrorHandler";
 const app: Application = express();
 
 app.use(express.json());
@@ -17,4 +18,6 @@ app.get("/health", (_req: Request, res: Response) => {
     message: "skill bridge app is running!..",
   });
 });
+
+app.use(errorHandler);
 export default app;

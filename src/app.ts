@@ -1,5 +1,12 @@
-import express, { Application } from "express";
+import express, { Application, Request, Response } from "express";
 
 const app: Application = express();
 
+app.use(express.json());
+app.get("/health", (_req: Request, res: Response) => {
+  res.status(200).json({
+    success: true,
+    message: "skill bridge app is running!..",
+  });
+});
 export default app;

@@ -1,4 +1,3 @@
-import { Assert } from "assert";
 import { BookingStatus, Role } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 import { ApiError } from "../../utils/apiError";
@@ -83,7 +82,7 @@ const cancelBooking = async (req: any, bookingId: string) => {
       throw new ApiError(403, "Not allowed to cancel");
     }
 
-    if (booking.status == !BookingStatus.CONFIRMED) {
+    if (booking.status !== BookingStatus.CONFIRMED) {
       throw new ApiError(400, "Booking can't be cancelled");
     }
 

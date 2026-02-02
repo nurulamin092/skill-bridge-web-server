@@ -27,8 +27,16 @@ const approvedTutor = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const createCategory = catchAsync(async (req: Request, res: Response) => {
+  const result = await adminService.createCategory(req);
+  res.status(201).json({
+    success: true,
+    data: result,
+  });
+});
 export const adminController = {
   getAllUsers,
   updateUserStatus,
   approvedTutor,
+  createCategory,
 };

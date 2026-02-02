@@ -24,8 +24,17 @@ const approvedTutor = async (req: any, tutorId: string) => {
     data: { isApproved: true },
   });
 };
+
+const createCategory = async (req: any) => {
+  requireRole(req, Role.ADMIN);
+  const { name, slug } = req.body;
+  return prisma.category.create({
+    data: { name, slug },
+  });
+};
 export const adminService = {
   getAllUser,
   updateUserStatus,
   approvedTutor,
+  createCategory,
 };

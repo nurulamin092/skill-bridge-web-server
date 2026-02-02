@@ -1,5 +1,7 @@
+import { Role } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 import { ApiError } from "../../utils/apiError";
+import { requireRole } from "../../utils/requireRole";
 
 const getAllTutor = async (query: any) => {
   const { category, minPrice, maxPrice, rating } = query;
@@ -74,7 +76,27 @@ const getSingleTuTor = async (id: string) => {
   }
   return tutor;
 };
+
+const getMySession = async (req: any) => {
+  const user = requireRole(req, Role.TUTOR);
+
+  return prisma.booking.findMany({
+    where: {
+      tutor: {
+        userId: user.id,
+      },
+    },
+    include: {
+      student: true,
+      availability: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+};
 export const tutorService = {
   getAllTutor,
   getSingleTuTor,
+  getMySession,
 };

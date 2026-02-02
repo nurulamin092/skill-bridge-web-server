@@ -27,4 +27,17 @@ const getMySession = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const tutorController = { getAllTutor, getSingleTuTor, getMySession };
+const updateSessionStatus = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await tutorService.updateSessionStatus(req, id as string);
+  res.status(200).json({
+    success: true,
+    data: result,
+  });
+});
+export const tutorController = {
+  getAllTutor,
+  getSingleTuTor,
+  getMySession,
+  updateSessionStatus,
+};

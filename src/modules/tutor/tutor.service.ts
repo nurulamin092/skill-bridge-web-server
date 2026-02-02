@@ -1,4 +1,4 @@
-import { Role } from "../../../generated/prisma/enums";
+import { BookingStatus, Role } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 import { ApiError } from "../../utils/apiError";
 import { requireRole } from "../../utils/requireRole";
@@ -95,8 +95,32 @@ const getMySession = async (req: any) => {
     },
   });
 };
+
+const updateSessionStatus = async (req: any, bookingId: string) => {
+  const user = requireRole(req, Role.TUTOR);
+  const { status } = req.body;
+
+  if (![BookingStatus.COMPLETED, BookingStatus.NO_SHOW].includes(status)) {
+    throw new ApiError(400, "Invalid status");
+  }
+  const booking = await prisma.booking.findUnique({
+    where: { id: bookingId },
+    include: {
+      tutor: true,
+    },
+  });
+  if (!booking || booking.tutor.userId !== user.id) {
+    throw new ApiError(401, "Unauthorize");
+  }
+
+  return prisma.booking.update({
+    where: { id: bookingId },
+    data: { status },
+  });
+};
 export const tutorService = {
   getAllTutor,
   getSingleTuTor,
   getMySession,
+  updateSessionStatus,
 };

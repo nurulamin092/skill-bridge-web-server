@@ -10,6 +10,14 @@ const createBooking = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getMyBooking = catchAsync(async (req: Request, res: Response) => {
+  const result = await bookingService.getMyBooking(req);
+  res.status(200).json({
+    success: true,
+    data: result,
+  });
+});
 export const bookingController = {
   createBooking,
+  getMyBooking,
 };

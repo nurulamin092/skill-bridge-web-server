@@ -1,0 +1,15 @@
+import { Request, Response } from "express";
+import { catchAsync } from "../../utils/catchAsync";
+import { bookingService } from "./booking.service";
+
+const createBooking = catchAsync(async (req: Request, res: Response) => {
+  const result = await bookingService.createBooking(req);
+  res.status(201).json({
+    success: true,
+    data: result,
+  });
+});
+
+export const bookingController = {
+  createBooking,
+};

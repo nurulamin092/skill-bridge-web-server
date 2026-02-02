@@ -1,4 +1,3 @@
-import { gt, gte } from "better-auth/*";
 import { prisma } from "../../lib/prisma";
 
 const getAllTutor = async (query: any) => {

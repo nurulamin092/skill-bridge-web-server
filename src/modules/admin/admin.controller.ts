@@ -10,6 +10,14 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getAllBookings = catchAsync(async (req: Request, res: Response) => {
+  const result = await adminService.getAllBookings(req);
+  res.status(200).json({
+    success: true,
+    data: result,
+  });
+});
+
 const updateUserStatus = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const result = await adminService.updateUserStatus(req, id as string);
@@ -36,6 +44,7 @@ const createCategory = catchAsync(async (req: Request, res: Response) => {
 });
 export const adminController = {
   getAllUsers,
+  getAllBookings,
   updateUserStatus,
   approvedTutor,
   createCategory,

@@ -7,6 +7,37 @@ const getAllUser = async (req: any) => {
   return await prisma.user.findMany();
 };
 
+const getAllBookings = async (req: any) => {
+  requireRole(req, Role.ADMIN);
+  return prisma.booking.findMany({
+    include: {
+      student: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+      tutor: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+      },
+      availability: true,
+      review: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+};
+
 const updateUserStatus = async (req: any, userId: string) => {
   requireRole(req, Role.ADMIN);
   const { isBanned } = req.body;
@@ -34,6 +65,7 @@ const createCategory = async (req: any) => {
 };
 export const adminService = {
   getAllUser,
+  getAllBookings,
   updateUserStatus,
   approvedTutor,
   createCategory,

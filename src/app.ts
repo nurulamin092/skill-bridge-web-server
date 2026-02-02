@@ -7,6 +7,7 @@ import { tutorRouter } from "./modules/tutor/tutor.router";
 import { bookingRouter } from "./modules/booking/booking.router";
 import { availabilityRouter } from "./modules/availability/availability.router";
 import { reviewRouter } from "./modules/review/review.router";
+import { adminRouter } from "./modules/admin/admin.router";
 const app: Application = express();
 
 app.use(
@@ -29,6 +30,7 @@ app.use("/api/v1/tutors", tutorRouter);
 app.use("/api/v1/booking", bookingRouter);
 app.use("/api/v1/tutor/availability", availabilityRouter);
 app.use("/api/v1/review", reviewRouter);
+app.use("/api/v1/admin", adminRouter);
 
 app.get("/health", (_req: Request, res: Response) => {
   res.status(200).json({

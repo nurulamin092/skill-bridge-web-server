@@ -19,7 +19,16 @@ const updateUserStatus = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const approvedTutor = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await adminService.approvedTutor(req, id as string);
+  res.status(200).json({
+    success: true,
+    data: result,
+  });
+});
 export const adminController = {
   getAllUsers,
   updateUserStatus,
+  approvedTutor,
 };

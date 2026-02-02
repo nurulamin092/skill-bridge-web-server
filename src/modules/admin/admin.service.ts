@@ -15,7 +15,17 @@ const updateUserStatus = async (req: any, userId: string) => {
     data: { isBanned },
   });
 };
+
+const approvedTutor = async (req: any, tutorId: string) => {
+  requireRole(req, Role.ADMIN);
+
+  return prisma.tutorProfile.update({
+    where: { id: tutorId },
+    data: { isApproved: true },
+  });
+};
 export const adminService = {
   getAllUser,
   updateUserStatus,
+  approvedTutor,
 };

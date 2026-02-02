@@ -10,4 +10,13 @@ const getAllTutor = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const tutorController = { getAllTutor };
+const getSingleTuTor = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await tutorService.getSingleTuTor(id as string);
+  res.status(200).json({
+    success: true,
+    data: result,
+  });
+});
+
+export const tutorController = { getAllTutor, getSingleTuTor };

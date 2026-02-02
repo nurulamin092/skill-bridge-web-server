@@ -15,7 +15,7 @@ const createReview = async (req: any) => {
   });
   if (
     !booking ||
-    booking.status !== user.id ||
+    booking.studentId !== user.id ||
     booking.status !== BookingStatus.COMPLETED
   ) {
     throw new ApiError(400, "Invalid Booking");

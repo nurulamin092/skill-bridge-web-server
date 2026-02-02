@@ -4,8 +4,8 @@ import { adminController } from "./admin.controller";
 const router = Router();
 
 router.get("/users", adminController.getAllUsers);
-router.get("/users/:id/status", adminController.updateUserStatus);
-router.get("/tutor/:id/approved", adminController.approvedTutor);
-router.get("/categories", adminController.createCategory);
+router.patch("/users/:id/status", adminController.updateUserStatus);
+router.patch("/tutor/:id/approved", adminController.approvedTutor);
+router.post("/categories", adminController.createCategory);
 
 export const adminRouter = router;

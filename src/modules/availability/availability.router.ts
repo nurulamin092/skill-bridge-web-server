@@ -4,6 +4,6 @@ import { availabilityController } from "./availability.controller";
 const router = Router();
 
 router.post("/", availabilityController.createAvailability);
-router.post("/me", availabilityController.getMyAvailability);
+router.get("/me", availabilityController.getMyAvailability);
 
 export const availabilityRouter = router;

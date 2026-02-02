@@ -35,6 +35,13 @@ const createBooking = async (req: any) => {
         priceSnapshot: tutor.hourlyRate,
       },
     });
+    await tx.availability.update({
+      where: { id: booking.availabilityId },
+      data: {
+        isBooked: true,
+        bookingId: booking.id,
+      },
+    });
     return booking;
   });
 };

@@ -10,9 +10,9 @@ const getAllTutor = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const getSingleTuTor = catchAsync(async (req: Request, res: Response) => {
+const getSingleTutor = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const result = await tutorService.getSingleTuTor(id as string);
+  const result = await tutorService.getSingleTutor(id as string);
   res.status(200).json({
     success: true,
     data: result,
@@ -20,7 +20,7 @@ const getSingleTuTor = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getMySession = catchAsync(async (req: Request, res: Response) => {
-  const result = await tutorService.getMySession(req);
+  const result = await tutorService.getMySessions(req);
   res.status(200).json({
     success: true,
     data: result,
@@ -37,7 +37,7 @@ const updateSessionStatus = catchAsync(async (req: Request, res: Response) => {
 });
 export const tutorController = {
   getAllTutor,
-  getSingleTuTor,
+  getSingleTutor,
   getMySession,
   updateSessionStatus,
 };

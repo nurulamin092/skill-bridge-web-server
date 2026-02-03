@@ -3,6 +3,6 @@ import { reviewController } from "./review.controller";
 
 const router = Router();
 
-router.post("/", reviewController.createBooking);
+router.post("/", reviewController.createReview);
 
 export const reviewRouter = router;

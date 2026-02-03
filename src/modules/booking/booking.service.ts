@@ -24,19 +24,25 @@ const createBooking = async (req: any) => {
     const tutor = await tx.tutorProfile.findUnique({
       where: { id: availability.tutorId },
     });
+
     if (!tutor || !tutor.isApproved) {
       throw new ApiError(404, "Tutor not available");
+    }
+    if (availability.tutorId !== tutor.id) {
+      throw new ApiError(400, "Invalid availability");
     }
     const booking = await tx.booking.create({
       data: {
         studentId: user.id,
-        tutorProfileId: tutor.id,
+        tutorProfileId: availability.tutorId,
         availabilityId: availability.id,
         priceSnapshot: tutor.hourlyRate,
+        status: BookingStatus.CONFIRMED,
       },
     });
+
     await tx.availability.update({
-      where: { id: booking.availabilityId },
+      where: { id: availability.id },
       data: {
         isBooked: true,
         bookingId: booking.id,
@@ -91,6 +97,13 @@ const cancelBooking = async (req: any, bookingId: string) => {
       data: {
         status: BookingStatus.CANCELLED,
         cancelledBy: user.role,
+      },
+    });
+    await tx.availability.update({
+      where: { id: booking.availabilityId },
+      data: {
+        isBooked: false,
+        bookingId: null,
       },
     });
     return { message: "Booking cancelled" };

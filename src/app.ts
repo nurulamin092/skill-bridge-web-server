@@ -19,11 +19,6 @@ app.use(
 
 app.use(express.json());
 
-app.all("/api/auth/*", (req, _res, next) => {
-  console.log("Auth route hit:", req.path, req.method);
-  next();
-});
-
 app.all("/api/auth/*", toNodeHandler(auth));
 
 app.use("/api/v1/tutors", tutorRouter);

@@ -5,7 +5,7 @@ const router = Router();
 
 router.get("/", tutorController.getAllTutor);
 router.get("/me/bookings", tutorController.getMySession);
-router.get("/:id", tutorController.getSingleTuTor);
 router.patch("/bookings/:id/status", tutorController.updateSessionStatus);
+router.get("/:id", tutorController.getSingleTutor);
 
 export const tutorRouter: Router = router;

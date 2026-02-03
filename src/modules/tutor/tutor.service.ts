@@ -50,7 +50,7 @@ const getAllTutor = async (query: any) => {
   });
 };
 
-const getSingleTuTor = async (id: string) => {
+const getSingleTutor = async (id: string) => {
   const tutor = await prisma.tutorProfile.findUnique({
     where: { id },
     include: {
@@ -77,7 +77,7 @@ const getSingleTuTor = async (id: string) => {
   return tutor;
 };
 
-const getMySession = async (req: any) => {
+const getMySessions = async (req: any) => {
   const user = requireRole(req, Role.TUTOR);
 
   return prisma.booking.findMany({
@@ -103,24 +103,43 @@ const updateSessionStatus = async (req: any, bookingId: string) => {
   if (![BookingStatus.COMPLETED, BookingStatus.NO_SHOW].includes(status)) {
     throw new ApiError(400, "Invalid status");
   }
-  const booking = await prisma.booking.findUnique({
-    where: { id: bookingId },
-    include: {
-      tutor: true,
-    },
-  });
-  if (!booking || booking.tutor.userId !== user.id) {
-    throw new ApiError(401, "Unauthorize");
-  }
 
-  return prisma.booking.update({
-    where: { id: bookingId },
-    data: { status },
+  return prisma.$transaction(async (tx) => {
+    const booking = await tx.booking.findUnique({
+      where: { id: bookingId },
+      include: {
+        tutor: true,
+      },
+    });
+    if (!booking || booking.tutor.userId !== user.id) {
+      throw new ApiError(403, "Not allowed to update this booking");
+    }
+
+    if (booking.status !== BookingStatus.CONFIRMED) {
+      throw new ApiError(400, "Only confirmed bookings can be updated");
+    }
+
+    const updateBooking = await tx.booking.update({
+      where: { id: bookingId },
+      data: { status },
+    });
+
+    if (status === BookingStatus.NO_SHOW) {
+      await tx.availability.update({
+        where: { id: booking.availabilityId },
+        data: {
+          isBooked: false,
+          bookingId: null,
+        },
+      });
+    }
+
+    return updateBooking;
   });
 };
 export const tutorService = {
   getAllTutor,
-  getSingleTuTor,
-  getMySession,
+  getSingleTutor,
+  getMySessions,
   updateSessionStatus,
 };

@@ -1,5 +1,6 @@
 import { Role } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
+import { ApiError } from "../../utils/apiError";
 import { requireRole } from "../../utils/requireRole";
 
 const getAllUser = async (req: any) => {
@@ -59,6 +60,13 @@ const approvedTutor = async (req: any, tutorId: string) => {
 const createCategory = async (req: any) => {
   requireRole(req, Role.ADMIN);
   const { name, slug } = req.body;
+  const exists = await prisma.category.findUnique({
+    where: { slug },
+  });
+
+  if (exists) {
+    throw new ApiError(400, "Category already exist");
+  }
   return prisma.category.create({
     data: { name, slug },
   });

@@ -8,6 +8,7 @@ import { bookingRouter } from "./modules/booking/booking.router";
 import { availabilityRouter } from "./modules/availability/availability.router";
 import { reviewRouter } from "./modules/review/review.router";
 import { adminRouter } from "./modules/admin/admin.router";
+import { categoriesRouter } from "./modules/category/category.router";
 const app: Application = express();
 
 app.use(
@@ -20,6 +21,8 @@ app.use(
 app.use(express.json());
 
 app.all("/api/auth/*", toNodeHandler(auth));
+
+app.use("/api/v1/categories", categoriesRouter);
 
 app.use("/api/v1/tutors", tutorRouter);
 app.use("/api/v1/booking", bookingRouter);

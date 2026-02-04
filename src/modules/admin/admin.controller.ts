@@ -49,6 +49,14 @@ const getAllCategories = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const updateCategory = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await adminService.updateCategory(req, id as string);
+  res.status(200).json({
+    success: true,
+    data: result,
+  });
+});
 
 export const adminController = {
   getAllUsers,
@@ -57,4 +65,5 @@ export const adminController = {
   approvedTutor,
   createCategory,
   getAllCategories,
+  updateCategory,
 };

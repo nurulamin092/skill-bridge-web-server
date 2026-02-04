@@ -10,5 +10,6 @@ router.get("/categories", adminController.getAllCategories);
 router.patch("/users/:id/status", adminController.updateUserStatus);
 router.patch("/tutor/:id/approved", adminController.approvedTutor);
 router.post("/categories", adminController.createCategory);
+router.put("/categories/:id", adminController.updateCategory);
 
 export const adminRouter = router;

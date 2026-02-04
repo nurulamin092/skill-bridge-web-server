@@ -77,6 +77,31 @@ const getAllCategories = async (req: any) => {
     orderBy: { createdAt: "desc" },
   });
 };
+const updateCategory = async (req: any, categoryId: string) => {
+  requireRole(req, Role.ADMIN);
+  const { name, slug } = req.body;
+
+  if (slug) {
+    const existing = await prisma.category.findFirst({
+      where: {
+        slug,
+        id: { not: categoryId },
+      },
+    });
+    if (existing) {
+      throw new ApiError(400, "Slug already exists");
+    }
+  }
+  return await prisma.category.update({
+    where: { id: categoryId },
+    data: {
+      ...(name && { name }),
+      ...(slug && { slug }),
+      updatedAt: new Date(),
+    },
+  });
+};
+
 export const adminService = {
   getAllUser,
   getAllBookings,
@@ -84,4 +109,5 @@ export const adminService = {
   approvedTutor,
   createCategory,
   getAllCategories,
+  updateCategory,
 };

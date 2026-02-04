@@ -42,10 +42,19 @@ const createCategory = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const getAllCategories = catchAsync(async (req: Request, res: Response) => {
+  const result = await adminService.getAllCategories(req);
+  res.status(200).json({
+    success: true,
+    data: result,
+  });
+});
+
 export const adminController = {
   getAllUsers,
   getAllBookings,
   updateUserStatus,
   approvedTutor,
   createCategory,
+  getAllCategories,
 };

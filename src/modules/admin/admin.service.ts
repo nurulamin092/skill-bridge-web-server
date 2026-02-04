@@ -71,10 +71,17 @@ const createCategory = async (req: any) => {
     data: { name, slug },
   });
 };
+const getAllCategories = async (req: any) => {
+  requireRole(req, Role.ADMIN);
+  return await prisma.category.findMany({
+    orderBy: { createdAt: "desc" },
+  });
+};
 export const adminService = {
   getAllUser,
   getAllBookings,
   updateUserStatus,
   approvedTutor,
   createCategory,
+  getAllCategories,
 };

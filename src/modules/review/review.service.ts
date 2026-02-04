@@ -13,7 +13,7 @@ const createReview = async (req: any) => {
   const { bookingId, rating, comment } = req.body;
 
   if (!bookingId || !rating) {
-    throw new ApiError(400, "booking id and rating is required");
+    throw new ApiError(400, "bookingId and rating is required");
   }
 
   if (rating < 1 || rating > 5) {

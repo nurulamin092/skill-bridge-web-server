@@ -57,6 +57,14 @@ const updateCategory = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const deleteCategory = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await adminService.deleteCategory(req, id as string);
+  res.status(200).json({
+    success: true,
+    data: result,
+  });
+});
 
 export const adminController = {
   getAllUsers,
@@ -66,4 +74,5 @@ export const adminController = {
   createCategory,
   getAllCategories,
   updateCategory,
+  deleteCategory,
 };

@@ -102,6 +102,20 @@ const updateCategory = async (req: any, categoryId: string) => {
   });
 };
 
+const deleteCategory = async (req: any, categoryId: string) => {
+  requireRole(req, Role.ADMIN);
+  const categoryIdUse = await prisma.tutorCategory.findFirst({
+    where: { categoryId },
+  });
+  if (categoryIdUse) {
+    throw new ApiError(400, "Can't delete category that assign to tutor");
+  }
+  await prisma.category.delete({
+    where: { id: categoryId },
+  });
+  return { message: "Category delete successfully" };
+};
+
 export const adminService = {
   getAllUser,
   getAllBookings,
@@ -110,4 +124,5 @@ export const adminService = {
   createCategory,
   getAllCategories,
   updateCategory,
+  deleteCategory,
 };

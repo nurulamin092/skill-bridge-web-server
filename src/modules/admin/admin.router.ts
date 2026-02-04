@@ -11,5 +11,6 @@ router.patch("/users/:id/status", adminController.updateUserStatus);
 router.patch("/tutor/:id/approved", adminController.approvedTutor);
 router.post("/categories", adminController.createCategory);
 router.put("/categories/:id", adminController.updateCategory);
+router.delete("/categories/:id", adminController.deleteCategory);
 
 export const adminRouter = router;

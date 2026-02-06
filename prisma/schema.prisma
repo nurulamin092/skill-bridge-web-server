@@ -78,6 +78,7 @@ model User {
   id            String  @id @default(uuid())
   name          String
   email         String  @unique
+  phone         String?
   emailVerified Boolean @default(false)
   role          Role    @default(STUDENT)
   isBanned      Boolean @default(false)
@@ -91,8 +92,12 @@ model User {
   sessions  Session[]
   accounts  Account[]
 
+  image  String?
+  status String? @default("ACTIVE")
+
   @@index([role])
   @@index([isBanned])
+  @@map("user")
 }
 
 model TutorProfile {

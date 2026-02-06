@@ -27,7 +27,7 @@ app.use("/api/v1/categories", categoriesRouter);
 app.use("/api/v1/tutors", tutorRouter);
 app.use("/api/v1/booking", bookingRouter);
 app.use("/api/v1/tutor/availability", availabilityRouter);
-app.use("/api/v1/review", reviewRouter);
+app.use("/api/v1/reviews", reviewRouter);
 app.use("/api/v1/admin", adminRouter);
 
 app.get("/health", (_req: Request, res: Response) => {

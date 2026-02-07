@@ -50,6 +50,47 @@ const createTutorProfile = async (req: any) => {
   });
 };
 
+const getMyTutorProfile = async (req: any) => {
+  const user = await requireRole(req, Role.TUTOR);
+
+  const tutorProfile = await prisma.tutorProfile.findUnique({
+    where: { userId: user.id },
+    include: {
+      tutorCategories: {
+        include: {
+          category: true,
+        },
+      },
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+        },
+      },
+      reviews: {
+        include: {
+          student: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: 5,
+      },
+    },
+  });
+  if (!tutorProfile) {
+    throw new ApiError(400, "Tutor profile not found");
+  }
+  return tutorProfile;
+};
 export const tutorProfileService = {
   createTutorProfile,
+  getMyTutorProfile,
 };

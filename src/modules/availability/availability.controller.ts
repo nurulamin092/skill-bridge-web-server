@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
 import { availabilityService } from "./availability.service";
 

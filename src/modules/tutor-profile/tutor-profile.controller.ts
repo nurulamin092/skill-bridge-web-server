@@ -6,6 +6,7 @@ const createTutorProfile = catchAsync(async (req: Request, res: Response) => {
   const result = await tutorProfileService.createTutorProfile(req.query);
   res.status(200).json({
     success: true,
+    message: "Tutor profile create successfully",
     data: result,
   });
 });
@@ -16,8 +17,17 @@ const getMyTutorProfile = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const updateTutorProfile = catchAsync(async (req: Request, res: Response) => {
+  const result = await tutorProfileService.updateTutorProfile(req);
+  res.status(200).json({
+    success: true,
+    message: "Tutor profile update successfully",
+    data: result,
+  });
+});
 
 export const tutorProfileController = {
   createTutorProfile,
   getMyTutorProfile,
+  updateTutorProfile,
 };

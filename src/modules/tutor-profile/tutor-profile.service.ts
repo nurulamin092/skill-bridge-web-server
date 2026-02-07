@@ -90,7 +90,59 @@ const getMyTutorProfile = async (req: any) => {
   }
   return tutorProfile;
 };
+
+const updateTutorProfile = async (req: any) => {
+  const user = requireRole(req, Role.TUTOR);
+  const { bio, hourlyRate, experience, categoryIds } = req.body;
+
+  const tutorProfile = await prisma.tutorProfile.findUnique({
+    where: {
+      userId: user.id,
+    },
+  });
+  if (!tutorProfile) {
+    throw new ApiError(404, "Tutor profile not found");
+  }
+
+  if (!hourlyRate && hourlyRate <= 0) {
+    throw new ApiError(400, "Hourly rate must be positive");
+  }
+
+  return prisma.$transaction(async (tx) => {
+    const updateProfile = await tx.tutorProfile.update({
+      where: { id: tutorProfile.id },
+      data: {
+        ...(bio !== undefined && { bio }),
+        ...(hourlyRate !== undefined && { hourlyRate: parseFloat(hourlyRate) }),
+        ...(experience !== undefined && { experience: parseFloat(experience) }),
+      },
+    });
+
+    if (categoryIds && Array.isArray(categoryIds)) {
+      await tx.tutorCategory.deleteMany({
+        where: { tutorId: tutorProfile.id },
+      });
+
+      const categories = await tx.category.findMany({
+        where: { id: { in: categoryIds } },
+      });
+
+      if (categories.length !== categoryIds.length) {
+        throw new ApiError(400, "One or more category not found");
+      }
+
+      await tx.tutorCategory.createMany({
+        data: categoryIds.map((categoryId: string) => ({
+          tutorId: tutorProfile.id,
+          categoryId,
+        })),
+      });
+    }
+    return updateProfile;
+  });
+};
 export const tutorProfileService = {
   createTutorProfile,
   getMyTutorProfile,
+  updateTutorProfile,
 };

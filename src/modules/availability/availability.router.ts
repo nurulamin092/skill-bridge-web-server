@@ -5,6 +5,7 @@ import auth, { UserRole } from "../../middleware/auth.middleware";
 const router = Router();
 
 router.use(auth(UserRole.TUTOR));
+
 router.post("/", availabilityController.createAvailability);
 router.get("/me", availabilityController.getMyAvailability);
 router.get("/booked", availabilityController.getBookedSessions);

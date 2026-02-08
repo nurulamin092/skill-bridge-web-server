@@ -20,6 +20,7 @@ const getCurrentUser = catchAsync(async (req: Request, res: Response) => {
       name: true,
       email: true,
       phone: true,
+      image: true,
       role: true,
       emailVerified: true,
       isBanned: true,
@@ -42,7 +43,7 @@ const getCurrentUser = catchAsync(async (req: Request, res: Response) => {
   if (user.isBanned) {
     throw new ApiError(
       403,
-      "Your account has been banned. Please Contract Support!",
+      "Your account has been banned. Please Contact Support!",
     );
   }
 

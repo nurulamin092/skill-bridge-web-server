@@ -1,7 +1,10 @@
 import { Router } from "express";
 import { adminController } from "./admin.controller";
+import auth, { UserRole } from "../../middleware/auth.middleware";
 
 const router = Router();
+
+router.use(auth(UserRole.ADMIN));
 
 router.get("/users", adminController.getAllUsers);
 router.get("/bookings", adminController.getAllBookings);

@@ -5,7 +5,7 @@ import { ApiError } from "../../utils/apiError";
 import { requireRole } from "../../utils/requireRole";
 
 const getStudentProfile = async (req: any) => {
-  const user = await requireRole(req, Role.STUDENT);
+  const user = requireRole(req, Role.STUDENT);
 
   const student = await prisma.user.findUnique({
     where: { id: user.id },

@@ -70,6 +70,7 @@ const getMyTutorProfile = async (req: any) => {
           name: true,
           email: true,
           phone: true,
+          image: true,
         },
       },
       reviews: {
@@ -78,6 +79,7 @@ const getMyTutorProfile = async (req: any) => {
             select: {
               id: true,
               name: true,
+              image: true,
             },
           },
         },

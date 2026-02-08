@@ -1,9 +1,7 @@
-import { parse } from "node:querystring";
 import { Role } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 import { ApiError } from "../../utils/apiError";
 import { requireRole } from "../../utils/requireRole";
-import { overwrite } from "better-auth/*";
 
 const getAllUser = async (req: any) => {
   requireRole(req, Role.ADMIN);
@@ -20,7 +18,7 @@ const getDashboardStats = async (req: any) => {
     pendingTutors,
     totalBookings,
     todayBookings,
-    confirmedBooking,
+    confirmedBookings,
     completedBookings,
     cancelledBookings,
     totalRevenue,
@@ -81,6 +79,7 @@ const getDashboardStats = async (req: any) => {
         id: true,
         name: true,
         email: true,
+        image: true,
         role: true,
         createdAt: true,
       },
@@ -131,7 +130,7 @@ const getDashboardStats = async (req: any) => {
   return {
     overview: {
       totalUsers,
-      tutor: {
+      tutors: {
         total: totalTutors,
         approved: approvedTutors,
         pending: pendingTutors,
@@ -141,7 +140,7 @@ const getDashboardStats = async (req: any) => {
         total: totalBookings,
         today: todayBookings,
         byStatus: {
-          confirmed: confirmedBooking,
+          confirmed: confirmedBookings,
           completed: completedBookings,
           cancel: cancelledBookings,
         },
@@ -173,6 +172,7 @@ const getAllBookings = async (req: any) => {
           id: true,
           name: true,
           email: true,
+          image: true,
         },
       },
       tutor: {
@@ -182,6 +182,7 @@ const getAllBookings = async (req: any) => {
               id: true,
               name: true,
               email: true,
+              image: true,
             },
           },
         },

@@ -4,7 +4,7 @@ import { ApiError } from "../../utils/apiError";
 import { getAuthUser } from "../../utils/authUser";
 
 const createBooking = async (req: any) => {
-  const user = getAuthUser(req);
+  const user = await getAuthUser(req);
 
   if (user.role !== Role.STUDENT) {
     throw new ApiError(403, "Only student can book session");
@@ -73,7 +73,7 @@ const getMyBooking = async (req: any) => {
 };
 
 const cancelBooking = async (req: any, bookingId: string) => {
-  const user = getAuthUser(req);
+  const user = await getAuthUser(req);
 
   return prisma.$transaction(async (tx) => {
     const booking = await tx.booking.findUnique({

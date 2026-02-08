@@ -4,7 +4,7 @@ import { ApiError } from "../../utils/apiError";
 import { getAuthUser } from "../../utils/authUser";
 
 const createReview = async (req: any) => {
-  const user = getAuthUser(req);
+  const user = await getAuthUser(req);
 
   if (user.role !== Role.STUDENT) {
     throw new ApiError(403, "Only student can review");

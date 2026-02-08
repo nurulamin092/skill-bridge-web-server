@@ -1,9 +1,14 @@
 import { Router } from "express";
 import { availabilityController } from "./availability.controller";
+import auth, { UserRole } from "../../middleware/auth.middleware";
 
 const router = Router();
 
+router.use(auth(UserRole.TUTOR));
 router.post("/", availabilityController.createAvailability);
 router.get("/me", availabilityController.getMyAvailability);
+router.get("/booked", availabilityController.getBookedSessions);
+router.put("/:id", availabilityController.updateAvailability);
+router.delete("/:id", availabilityController.deleteAvailability);
 
 export const availabilityRouter = router;

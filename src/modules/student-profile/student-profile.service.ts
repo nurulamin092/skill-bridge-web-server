@@ -1,4 +1,3 @@
-import { unescape } from "querystring";
 import { Role } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 import { ApiError } from "../../utils/apiError";

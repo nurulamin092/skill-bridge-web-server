@@ -1,11 +1,12 @@
 import { Router } from "express";
 
-import auth, { UserRole } from "../../middleware/auth.middleware";
+import auth from "../../middleware/auth.middleware";
 import { tutorProfileController } from "./tutor-profile.controller";
+import { Role } from "../../../generated/prisma/enums";
 
 const router = Router();
 
-router.use(auth(UserRole.TUTOR));
+router.use(auth(Role.TUTOR));
 
 router.post("/", tutorProfileController.createTutorProfile);
 router.get("/me", tutorProfileController.getMyTutorProfile);

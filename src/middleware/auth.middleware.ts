@@ -2,12 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { auth as betterAuth } from "../lib/auth";
 import { ApiError } from "../utils/apiError";
 import { prisma } from "../lib/prisma";
-
-export enum UserRole {
-  STUDENT = "STUDENT",
-  TUTOR = "TUTOR",
-  ADMIN = "ADMIN",
-}
+import { Role } from "../../generated/prisma/enums";
 
 declare global {
   namespace Express {
@@ -16,7 +11,7 @@ declare global {
         id: string;
         email: string;
         name: string;
-        role: UserRole;
+        role: Role;
         emailVerified: boolean;
         isBanned: boolean;
       };
@@ -24,7 +19,7 @@ declare global {
   }
 }
 
-const auth = (...roles: UserRole[]) => {
+const auth = (...roles: Role[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
       const session = await betterAuth.api.getSession({
@@ -68,12 +63,12 @@ const auth = (...roles: UserRole[]) => {
         id: user.id,
         email: user.email,
         name: user.name,
-        role: user.role as UserRole,
+        role: user.role as Role,
         emailVerified: session.user.emailVerified,
         isBanned: user.isBanned,
       };
 
-      if (roles.length && !roles.includes(req.user.role as UserRole)) {
+      if (roles.length && !roles.includes(req.user.role as Role)) {
         throw new ApiError(
           403,
           `Access denied. Required role : ${roles.join(", ")} s Your role : ${req.user.role}`,

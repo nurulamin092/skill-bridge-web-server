@@ -1,5 +1,5 @@
+import { Role } from "../../generated/prisma/enums";
 import { prisma } from "../lib/prisma";
-import { UserRole } from "../middleware/auth.middleware";
 
 async function seedAdmin() {
   try {
@@ -8,7 +8,7 @@ async function seedAdmin() {
     const adminData = {
       name: "Admin Admin",
       email: "admin.a@admin.com",
-      role: UserRole.ADMIN,
+      role: Role.ADMIN,
       password: "Admin@1234",
     };
 

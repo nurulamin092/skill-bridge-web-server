@@ -1,7 +1,5 @@
 import { Role } from "../../../generated/prisma/enums";
-import { UserScalarFieldEnum } from "../../../generated/prisma/internal/prismaNamespace";
 import { prisma } from "../../lib/prisma";
-import { UserRole } from "../../middleware/auth.middleware";
 import { ApiError } from "../../utils/apiError";
 import { requireRole } from "../../utils/requireRole";
 
@@ -64,7 +62,7 @@ const getMyAvailability = async (req: any) => {
 };
 
 const updateAvailability = async (req: any, availabilityId: string) => {
-  const user = requireRole(req, UserRole.TUTOR);
+  const user = requireRole(req, Role.TUTOR);
   const { startTime, endTime } = req.body;
   if (!startTime || !endTime) {
     throw new ApiError(400, "startTime and endTime are required");
@@ -122,7 +120,7 @@ const updateAvailability = async (req: any, availabilityId: string) => {
   });
 };
 const deleteAvailability = async (req: any, availabilityId: string) => {
-  const user = requireRole(req, UserRole.TUTOR);
+  const user = requireRole(req, Role.TUTOR);
 
   return prisma.$transaction(async (tx) => {
     const availability = await tx.availability.findUnique({
@@ -151,7 +149,7 @@ const deleteAvailability = async (req: any, availabilityId: string) => {
 };
 
 const getTutorBookedSessions = async (req: any) => {
-  const user = requireRole(req, UserRole.TUTOR);
+  const user = requireRole(req, Role.TUTOR);
 
   const tutorProfile = await prisma.tutorProfile.findUnique({
     where: { userId: user.id },

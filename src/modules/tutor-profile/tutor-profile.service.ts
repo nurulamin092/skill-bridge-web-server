@@ -28,18 +28,21 @@ const createTutorProfile = async (req: any) => {
   });
 
   if (categories.length !== categoryIds.length) {
-    throw new ApiError(400, "One or more categories not found");
+    const foundIds = categories.map((c) => c.id);
+    const missingIds = categoryIds.filter((id) => !foundIds.includes(id));
+    throw new ApiError(400, `Categories not found: ${missingIds.join(", ")}`);
   }
 
   return prisma.$transaction(async (tx) => {
     const tutorProfile = await tx.tutorProfile.create({
       data: {
         userId: user.id,
-        bio,
+        bio: bio || null,
         hourlyRate: parseFloat(hourlyRate),
         experience: parseInt(experience) || 0,
       },
     });
+
     await tx.tutorCategory.createMany({
       data: categoryIds.map((categoryId: string) => ({
         tutorId: tutorProfile.id,
@@ -51,7 +54,7 @@ const createTutorProfile = async (req: any) => {
 };
 
 const getMyTutorProfile = async (req: any) => {
-  const user = await requireRole(req, Role.TUTOR);
+  const user = requireRole(req, Role.TUTOR);
 
   const tutorProfile = await prisma.tutorProfile.findUnique({
     where: { userId: user.id },
@@ -83,10 +86,20 @@ const getMyTutorProfile = async (req: any) => {
         },
         take: 5,
       },
+      availabilities: {
+        where: {
+          startTime: { gt: new Date() },
+          isBooked: false,
+        },
+        take: 5,
+        orderBy: {
+          startTime: "asc",
+        },
+      },
     },
   });
   if (!tutorProfile) {
-    throw new ApiError(400, "Tutor profile not found");
+    throw new ApiError(404, "Tutor profile not found");
   }
   return tutorProfile;
 };
@@ -104,7 +117,7 @@ const updateTutorProfile = async (req: any) => {
     throw new ApiError(404, "Tutor profile not found");
   }
 
-  if (!hourlyRate && hourlyRate <= 0) {
+  if (hourlyRate !== undefined && hourlyRate <= 0) {
     throw new ApiError(400, "Hourly rate must be positive");
   }
 
@@ -114,7 +127,9 @@ const updateTutorProfile = async (req: any) => {
       data: {
         ...(bio !== undefined && { bio }),
         ...(hourlyRate !== undefined && { hourlyRate: parseFloat(hourlyRate) }),
-        ...(experience !== undefined && { experience: parseFloat(experience) }),
+        ...(experience !== undefined && {
+          experience: parseInt(experience) || 0,
+        }),
       },
     });
 

@@ -41,7 +41,7 @@ const getStudentProfile = async (req: any) => {
     },
   });
   if (!student) {
-    throw new ApiError(400, "Tutor profile not found");
+    throw new ApiError(404, "Student profile not found");
   }
   return student;
 };
@@ -160,7 +160,7 @@ const getStudentDashboard = async (req: any) => {
     pastBookings,
   };
 };
-export const tutorProfileService = {
+export const studentProfileService = {
   getStudentProfile,
   updateStudentProfile,
   getStudentDashboard,

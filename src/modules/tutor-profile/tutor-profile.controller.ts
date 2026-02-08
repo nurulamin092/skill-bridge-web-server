@@ -3,7 +3,7 @@ import { catchAsync } from "../../utils/catchAsync";
 import { tutorProfileService } from "./tutor-profile.service";
 
 const createTutorProfile = catchAsync(async (req: Request, res: Response) => {
-  const result = await tutorProfileService.createTutorProfile(req.query);
+  const result = await tutorProfileService.createTutorProfile(req);
   res.status(200).json({
     success: true,
     message: "Tutor profile create successfully",

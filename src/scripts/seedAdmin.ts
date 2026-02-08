@@ -4,6 +4,7 @@ import { UserRole } from "../middleware/auth.middleware";
 async function seedAdmin() {
   try {
     console.log("******* Admin seeding stated ******");
+
     const adminData = {
       name: "Admin Admin",
       email: "admin.a@admin.com",

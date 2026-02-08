@@ -9,6 +9,13 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const getDashboardStats = catchAsync(async (req: Request, res: Response) => {
+  const result = await adminService.getDashboardStats(req);
+  res.status(200).json({
+    success: true,
+    data: result,
+  });
+});
 
 const getAllBookings = catchAsync(async (req: Request, res: Response) => {
   const result = await adminService.getAllBookings(req);
@@ -68,6 +75,7 @@ const deleteCategory = catchAsync(async (req: Request, res: Response) => {
 
 export const adminController = {
   getAllUsers,
+  getDashboardStats,
   getAllBookings,
   updateUserStatus,
   approvedTutor,

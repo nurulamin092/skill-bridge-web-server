@@ -39,7 +39,7 @@ app.use("/api/v1/tutor/profile", tutorProfileRouter);
 app.use("/api/v1/reviews", reviewRouter);
 app.use("/api/v1/admin", adminRouter);
 
-app.get("/health", (_req: Request, res: Response) => {
+app.get("/", (_req: Request, res: Response) => {
   res.status(200).json({
     success: true,
     message: "skill bridge app is running!..",

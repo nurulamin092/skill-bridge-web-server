@@ -1,0 +1,198 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  STUDENT
+  TUTOR
+  ADMIN
+}
+
+enum BookingStatus {
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id @default(uuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id @default(uuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+model User {
+  id            String  @id @default(uuid())
+  name          String
+  email         String  @unique
+  phone         String?
+  emailVerified Boolean @default(false)
+  role          Role    @default(STUDENT)
+  isBanned      Boolean @default(false)
+
+  tutorProfile    TutorProfile?
+  studentBookings Booking[]     @relation("StudentBookings")
+  reviews         Review[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  sessions  Session[]
+  accounts  Account[]
+
+  image  String?
+  status String? @default("ACTIVE")
+
+  @@index([role])
+  @@index([isBanned])
+  @@map("user")
+}
+
+model TutorProfile {
+  id         String  @id @default(uuid())
+  userId     String  @unique
+  bio        String?
+  hourlyRate Float
+  experience Int
+  avgRating  Float   @default(0)
+  isApproved Boolean @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tutorCategories TutorCategory[]
+  availabilities  Availability[]
+  bookings        Booking[]
+  reviews         Review[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isApproved])
+}
+
+model Category {
+  id   String @id @default(uuid())
+  name String @unique
+  slug String @unique
+
+  tutors TutorCategory[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TutorCategory {
+  tutorId    String
+  categoryId String
+
+  tutor    TutorProfile @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  category Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([tutorId, categoryId])
+}
+
+model Availability {
+  id        String   @id @default(uuid())
+  tutorId   String
+  startTime DateTime
+  endTime   DateTime
+  isBooked  Boolean  @default(false)
+  bookingId String?  @unique
+
+  tutor     TutorProfile @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  booking   Booking?
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@index([tutorId, startTime, endTime])
+}
+
+model Booking {
+  id             String        @id @default(uuid())
+  studentId      String
+  tutorProfileId String
+  availabilityId String        @unique
+  status         BookingStatus @default(CONFIRMED)
+  priceSnapshot  Float
+
+  student User         @relation("StudentBookings", fields: [studentId], references: [id])
+  tutor   TutorProfile @relation(fields: [tutorProfileId], references: [id])
+
+  availability Availability @relation(fields: [availabilityId], references: [id])
+  review       Review?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cancelReason String?
+  cancelledBy  Role?
+
+  @@index([status])
+}
+
+model Review {
+  id        String @id @default(uuid())
+  rating    Int
+  comment   String
+  tutorId   String
+  studentId String
+  bookingId String @unique
+
+  tutor   TutorProfile @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  student User         @relation(fields: [studentId], references: [id])
+  booking Booking      @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}

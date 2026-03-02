@@ -52,7 +52,15 @@ const getCurrentUser = catchAsync(async (req: Request, res: Response) => {
     data: user,
   });
 });
+const getSession = catchAsync(async (req: Request, res: Response) => {
+  const session = await betterAuth.api.getSession({
+    headers: req.headers as any,
+  });
+
+  res.json(session);
+});
 
 export const authController = {
   getCurrentUser,
+  getSession,
 };

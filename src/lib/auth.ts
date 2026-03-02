@@ -21,6 +21,12 @@ export const auth = betterAuth({
     "https://skill-bridge-web-client.vercel.app",
     "http://localhost:3000",
   ],
+  endpoints: {
+    signUp: "/api/auth/sign-up",
+    signIn: "/api/auth/sign-in",
+    signOut: "/api/auth/sign-out",
+    session: "/api/auth/session",
+  },
 
   emailAndPassword: {
     enabled: true,

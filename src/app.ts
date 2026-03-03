@@ -3,6 +3,7 @@ import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth";
 import { errorHandler } from "./middleware/globalErrorHandler";
 import cors from "cors";
+import verifyEmailRoute from "./modules/auth/verify-email.route";
 
 import { tutorRouter } from "./modules/tutor/tutor.router";
 import { bookingRouter } from "./modules/booking/booking.router";
@@ -21,25 +22,36 @@ const allowedOrigins = [
   "https://skill-bridge-web-client.vercel.app",
 ];
 
-const corsOptions: cors.CorsOptions = {
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
+// const corsOptions: cors.CorsOptions = {
+//   origin: function (origin, callback) {
+//     if (!origin) return callback(null, true);
+//     if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
+//       return callback(null, true);
+//     }
 
-    if (origin.endsWith(".vercel.app")) {
-      return callback(null, true);
-    }
+//     if (origin.endsWith(".vercel.app")) {
+//       return callback(null, true);
+//     }
 
-    return callback(new Error("Not allowed by CORS"));
-  },
-  credentials: true,
-};
+//     return callback(new Error("Not allowed by CORS"));
+//   },
+//   credentials: true,
+// };
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
 
-app.options("*", cors(corsOptions));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  }),
+);
 
 app.use(express.json());
 
@@ -61,6 +73,8 @@ app.get("/", (_req: Request, res: Response) => {
     message: "Skill Bridge API is running!",
   });
 });
+
+app.use(verifyEmailRoute);
 
 app.get("/api/auth/debug", (req, res) => {
   res.json({

@@ -33,6 +33,18 @@ export const auth = betterAuth({
     autoSignIn: false,
     requireEmailVerification: true,
   },
+  session: {
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60,
+    },
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "none",
+      path: "/",
+    },
+  },
+
   emailVerification: {
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
@@ -212,12 +224,7 @@ export const auth = betterAuth({
       },
     },
   },
-  session: {
-    cookieCache: {
-      enabled: true,
-      maxAge: 5 * 60,
-    },
-  },
+
   databaseHooks: {
     user: {
       create: {

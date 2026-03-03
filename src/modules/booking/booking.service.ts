@@ -71,6 +71,33 @@ const getMyBooking = async (req: any) => {
     },
   });
 };
+const getBookingById = async (req: any, bookingId: string) => {
+  const user = await getAuthUser(req);
+
+  const booking = await prisma.booking.findUnique({
+    where: { id: bookingId },
+    include: {
+      student: true,
+      tutor: {
+        include: {
+          user: true,
+        },
+      },
+      availability: true,
+      review: true,
+    },
+  });
+
+  if (!booking) {
+    throw new ApiError(404, "Booking not found");
+  }
+
+  if (booking.studentId !== user.id && user.role !== Role.ADMIN) {
+    throw new ApiError(403, "You don't have access to this booking");
+  }
+
+  return booking;
+};
 
 const cancelBooking = async (req: any, bookingId: string) => {
   const user = await getAuthUser(req);
@@ -110,4 +137,9 @@ const cancelBooking = async (req: any, bookingId: string) => {
   });
 };
 
-export const bookingService = { createBooking, getMyBooking, cancelBooking };
+export const bookingService = {
+  createBooking,
+  getMyBooking,
+  getBookingById,
+  cancelBooking,
+};

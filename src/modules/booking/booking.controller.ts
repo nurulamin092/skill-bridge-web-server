@@ -18,6 +18,15 @@ const getMyBooking = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getBookingById = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await bookingService.getBookingById(req, id as string);
+  res.status(200).json({
+    success: true,
+    data: result,
+  });
+});
+
 const cancelBooking = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const result = await bookingService.cancelBooking(req, id as string);
@@ -29,5 +38,6 @@ const cancelBooking = catchAsync(async (req: Request, res: Response) => {
 export const bookingController = {
   createBooking,
   getMyBooking,
+  getBookingById,
   cancelBooking,
 };

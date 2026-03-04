@@ -39,7 +39,7 @@ export const auth = betterAuth({
       maxAge: 5 * 60,
     },
     cookie: {
-      name: "better-auth.session_token",
+      name: "__Secure-better-auth.session_token",
       secure: true,
       sameSite: "lax",
       path: "/",

@@ -84,6 +84,9 @@ app.get("/api/auth/debug", (req, res) => {
   });
 });
 
+app.get("/api/auth/get-session", (req, res, next) => {
+  return toNodeHandler(auth).call({ req, res }, req, res);
+});
 app.use(errorHandler);
 
 export default app;

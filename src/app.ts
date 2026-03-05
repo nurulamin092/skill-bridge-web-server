@@ -5,7 +5,6 @@ import { errorHandler } from "./middleware/globalErrorHandler";
 import cors from "cors";
 import verifyEmailRoute from "./modules/auth/verify-email.route";
 
-// Routes
 import { tutorRouter } from "./modules/tutor/tutor.router";
 import { bookingRouter } from "./modules/booking/booking.router";
 import { availabilityRouter } from "./modules/availability/availability.router";
@@ -27,12 +26,22 @@ app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
+
       if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
         return callback(null, true);
       }
       return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "X-Requested-With",
+      "Accept",
+      "Origin",
+    ],
+    exposedHeaders: ["set-cookie"],
   }),
 );
 
@@ -40,6 +49,10 @@ app.use(express.json());
 
 app.use((req, res, next) => {
   console.log(`📨 ${req.method} ${req.path}`);
+  console.log("🔍 Headers:", {
+    origin: req.headers.origin,
+    cookie: req.headers.cookie ? "✅ Present" : "❌ Not present",
+  });
   next();
 });
 
@@ -64,24 +77,37 @@ app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/auth", authRouter);
 
 app.get("/", (req, res) => {
-  res.json({ message: "Skill Bridge API is running!" });
+  res.json({
+    message: "Skill Bridge API is running!",
+    time: new Date().toISOString(),
+    env: process.env.NODE_ENV,
+  });
 });
 
 app.get("/api/auth/debug", (req, res) => {
   res.json({
-    message: "Debug endpoint working",
+    message: "Auth debug endpoint working",
     path: req.path,
     method: req.method,
-    headers: req.headers,
+    headers: {
+      origin: req.headers.origin,
+      host: req.headers.host,
+      "user-agent": req.headers["user-agent"],
+      cookie: req.headers.cookie ? "✅ Present" : "❌ Not present",
+    },
     time: new Date().toISOString(),
   });
 });
 
 app.get("/test", (req, res) => {
-  res.json({ message: "Test endpoint working" });
+  res.json({
+    message: "Test endpoint working",
+    time: new Date().toISOString(),
+  });
 });
 
 app.use(verifyEmailRoute);
+
 app.use(errorHandler);
 
 export default app;

@@ -1,3 +1,4 @@
+// src/modules/auth/verify-email.route.ts
 import { Router, Request, Response } from "express";
 import { auth } from "../../lib/auth";
 
@@ -6,10 +7,15 @@ const router: Router = Router();
 router.get("/verify-email", async (req: Request, res: Response) => {
   const token = req.query.token as string;
 
-  if (!token) return res.status(400).send("Token নেই");
+  if (!token) {
+    return res.status(400).send("Token নেই");
+  }
 
   try {
-    await (auth as any).emailVerification.verifyToken(token);
+    await (auth.api.verifyEmail as any)({
+      body: { token },
+    });
+
     res.redirect(
       "https://skill-bridge-web-client.vercel.app/login?verified=true",
     );

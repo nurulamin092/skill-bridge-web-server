@@ -18,9 +18,7 @@ export const auth = betterAuth({
     provider: "postgresql",
   }),
 
-  // baseURL:
-  //   process.env.BETTER_AUTH_URL || "https://skillbridge-api-tiua.onrender.com",
-  baseURL: "https://skillbridge-api-tiua.onrender.com",
+  baseURL: process.env.BETTER_AUTH_URL || "http://localhost:5000",
   trustedOrigins: [
     "https://skill-bridge-web-client.vercel.app",
     "http://localhost:3000",

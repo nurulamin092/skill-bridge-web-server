@@ -26,15 +26,12 @@ app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
-
       if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
         return callback(null, true);
       }
       return callback(new Error("Not allowed by CORS"));
     },
-
     credentials: true,
-
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: [
       "Content-Type",
@@ -58,16 +55,59 @@ app.use((req, res, next) => {
   next();
 });
 
-app.all("/api/auth/*", (req, res) => {
-  console.log("🎯 Auth route handler:", req.method, req.path);
-  try {
-    return toNodeHandler(auth)(req, res);
-  } catch (error) {
-    console.error("❌ Auth handler error:", error);
-    res.status(500).json({ error: "Auth handler error" });
-  }
+app.get("/api/auth/*", (req, res) => {
+  console.log("🎯 Auth GET route handler:", req.method, req.path);
+  return toNodeHandler(auth)(req, res);
 });
 
+app.post("/api/auth/*", (req, res) => {
+  console.log("🎯 Auth POST route handler:", req.method, req.path);
+  return toNodeHandler(auth)(req, res);
+});
+
+app.all("/api/auth/*", (req, res) => {
+  console.log("🎯 Auth ALL route handler:", req.method, req.path);
+  return toNodeHandler(auth)(req, res);
+});
+app.post("/api/auth/sign-in/email", (req, res) => {
+  console.log("🔐 Sign-in endpoint hit");
+  return toNodeHandler(auth)(req, res);
+});
+
+app.get("/api/auth/get-session", (req, res) => {
+  console.log("🔐 Get-session endpoint hit");
+  return toNodeHandler(auth)(req, res);
+});
+
+app.post("/api/auth/sign-out", (req, res) => {
+  console.log("🔐 Sign-out endpoint hit");
+  return toNodeHandler(auth)(req, res);
+});
+
+app.get("/api/auth/debug-cookie", (req, res) => {
+  console.log("🔍 Cookie Debug Endpoint Hit");
+  console.log("Cookie Header:", req.headers.cookie);
+
+  res.json({
+    message: "Cookie Debug",
+    cookiePresent: !!req.headers.cookie,
+    cookieValue: req.headers.cookie,
+    headers: {
+      origin: req.headers.origin,
+      host: req.headers.host,
+      "user-agent": req.headers["user-agent"],
+    },
+  });
+});
+
+app.get("/api/auth/test", (req, res) => {
+  res.json({
+    message: "Auth test endpoint working!",
+    time: new Date().toISOString(),
+  });
+});
+
+// API Routes
 app.use("/api/v1/tutors", tutorRouter);
 app.use("/api/v1/student", studentProfileRouter);
 app.use("/api/v1/categories", categoriesRouter);
@@ -100,18 +140,6 @@ app.get("/api/auth/debug", (req, res) => {
     time: new Date().toISOString(),
   });
 });
-app.get("/api/auth/debug-cookie", (req, res) => {
-  console.log("🔍 Cookie Debug Endpoint Hit");
-  console.log("Full Headers:", JSON.stringify(req.headers, null, 2));
-  console.log("Cookie Header:", req.headers.cookie);
-
-  res.json({
-    message: "Cookie Debug",
-    cookiePresent: !!req.headers.cookie,
-    cookieValue: req.headers.cookie,
-    allHeaders: req.headers,
-  });
-});
 
 app.get("/test", (req, res) => {
   res.json({
@@ -121,7 +149,6 @@ app.get("/test", (req, res) => {
 });
 
 app.use(verifyEmailRoute);
-
 app.use(errorHandler);
 
 export default app;

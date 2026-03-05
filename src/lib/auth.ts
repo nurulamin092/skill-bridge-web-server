@@ -47,8 +47,10 @@ export const auth = betterAuth({
       secure: true,
       sameSite: "none",
       path: "/",
-
+      domain:
+        process.env.NODE_ENV === "production" ? ".onrender.com" : undefined,
       httpOnly: true,
+
       maxAge: 7 * 24 * 60 * 60 * 1000,
     },
   },

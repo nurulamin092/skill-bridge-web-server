@@ -5,6 +5,7 @@ import { errorHandler } from "./middleware/globalErrorHandler";
 import cors from "cors";
 import verifyEmailRoute from "./modules/auth/verify-email.route";
 
+// Routes
 import { tutorRouter } from "./modules/tutor/tutor.router";
 import { bookingRouter } from "./modules/booking/booking.router";
 import { availabilityRouter } from "./modules/availability/availability.router";
@@ -22,24 +23,6 @@ const allowedOrigins = [
   "https://skill-bridge-web-client.vercel.app",
 ];
 
-// const corsOptions: cors.CorsOptions = {
-//   origin: function (origin, callback) {
-//     if (!origin) return callback(null, true);
-//     if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
-//       return callback(null, true);
-//     }
-
-//     if (origin.endsWith(".vercel.app")) {
-//       return callback(null, true);
-//     }
-
-//     return callback(new Error("Not allowed by CORS"));
-//   },
-//   credentials: true,
-// };
-
-// app.use(cors(corsOptions));
-
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -55,10 +38,22 @@ app.use(
 
 app.use(express.json());
 
-app.all("/api/auth/*", toNodeHandler(auth));
+app.use((req, res, next) => {
+  console.log(`📨 ${req.method} ${req.path}`);
+  next();
+});
+
+app.all("/api/auth/*", (req, res) => {
+  console.log("🎯 Auth route handler:", req.method, req.path);
+  try {
+    return toNodeHandler(auth)(req, res);
+  } catch (error) {
+    console.error("❌ Auth handler error:", error);
+    res.status(500).json({ error: "Auth handler error" });
+  }
+});
 
 app.use("/api/v1/tutors", tutorRouter);
-app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/student", studentProfileRouter);
 app.use("/api/v1/categories", categoriesRouter);
 app.use("/api/v1/booking", bookingRouter);
@@ -66,27 +61,27 @@ app.use("/api/v1/tutor/availability", availabilityRouter);
 app.use("/api/v1/tutor/profile", tutorProfileRouter);
 app.use("/api/v1/reviews", reviewRouter);
 app.use("/api/v1/admin", adminRouter);
+app.use("/api/v1/auth", authRouter);
 
-app.get("/", (_req: Request, res: Response) => {
-  res.status(200).json({
-    success: true,
-    message: "Skill Bridge API is running!",
-  });
+app.get("/", (req, res) => {
+  res.json({ message: "Skill Bridge API is running!" });
 });
-
-app.use(verifyEmailRoute);
 
 app.get("/api/auth/debug", (req, res) => {
   res.json({
-    message: "Auth endpoint is working",
-    origin: req.headers.origin,
+    message: "Debug endpoint working",
+    path: req.path,
+    method: req.method,
     headers: req.headers,
+    time: new Date().toISOString(),
   });
 });
 
-app.get("/api/auth/get-session", (req, res, next) => {
-  return toNodeHandler(auth).call({ req, res }, req, res);
+app.get("/test", (req, res) => {
+  res.json({ message: "Test endpoint working" });
 });
+
+app.use(verifyEmailRoute);
 app.use(errorHandler);
 
 export default app;

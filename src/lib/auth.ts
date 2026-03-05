@@ -17,6 +17,9 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
+
+  baseURL: process.env.BACKEND_URL || "http://localhost:5000",
+
   trustedOrigins: [
     "https://skill-bridge-web-client.vercel.app",
     "http://localhost:3000",
@@ -39,7 +42,7 @@ export const auth = betterAuth({
       maxAge: 5 * 60,
     },
     cookie: {
-      name: "__Secure-better-auth.session_token",
+      name: "better-auth.session_token",
       secure: true,
       sameSite: "lax",
       path: "/",

@@ -14,7 +14,11 @@ async function main() {
     console.log("✅ Connected to database successfully");
 
     const server = app.listen(PORT, () => {
-      console.log(`✅ Server running on port ${PORT}`);
+      console.log(`🚀 Server running on http://localhost:${PORT}`);
+      console.log(
+        `📚 Auth endpoints available at http://localhost:${PORT}/api/auth/*`,
+      );
+      console.log(`🔧 Debug endpoint: http://localhost:${PORT}/api/auth/debug`);
     });
 
     process.on("SIGTERM", async () => {

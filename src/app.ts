@@ -55,20 +55,45 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get("/api/auth/*", (req, res) => {
-  console.log("🎯 Auth GET route handler:", req.method, req.path);
-  return toNodeHandler(auth)(req, res);
+app.get("/test", (req, res) => {
+  res.json({
+    message: "Test endpoint working",
+    time: new Date().toISOString(),
+  });
 });
 
-app.post("/api/auth/*", (req, res) => {
-  console.log("🎯 Auth POST route handler:", req.method, req.path);
-  return toNodeHandler(auth)(req, res);
+app.get("/api/auth/test", (req, res) => {
+  console.log("📌 Direct auth test hit");
+  res.json({
+    message: "Direct auth test working!",
+    time: new Date().toISOString(),
+  });
 });
 
-app.all("/api/auth/*", (req, res) => {
-  console.log("🎯 Auth ALL route handler:", req.method, req.path);
-  return toNodeHandler(auth)(req, res);
+app.get("/api/auth/debug", (req, res) => {
+  console.log("📌 Direct debug hit");
+  res.json({
+    message: "Direct debug working",
+    cookies: req.headers.cookie || "No cookies",
+    headers: req.headers,
+  });
 });
+
+app.get("/api/auth/debug-cookie", (req, res) => {
+  console.log("🔍 Cookie Debug Endpoint Hit");
+  console.log("Cookie Header:", req.headers.cookie);
+  res.json({
+    message: "Cookie Debug",
+    cookiePresent: !!req.headers.cookie,
+    cookieValue: req.headers.cookie,
+    headers: {
+      origin: req.headers.origin,
+      host: req.headers.host,
+      "user-agent": req.headers["user-agent"],
+    },
+  });
+});
+
 app.post("/api/auth/sign-in/email", (req, res) => {
   console.log("🔐 Sign-in endpoint hit");
   return toNodeHandler(auth)(req, res);
@@ -84,30 +109,21 @@ app.post("/api/auth/sign-out", (req, res) => {
   return toNodeHandler(auth)(req, res);
 });
 
-app.get("/api/auth/debug-cookie", (req, res) => {
-  console.log("🔍 Cookie Debug Endpoint Hit");
-  console.log("Cookie Header:", req.headers.cookie);
-
-  res.json({
-    message: "Cookie Debug",
-    cookiePresent: !!req.headers.cookie,
-    cookieValue: req.headers.cookie,
-    headers: {
-      origin: req.headers.origin,
-      host: req.headers.host,
-      "user-agent": req.headers["user-agent"],
-    },
-  });
+app.get("/api/auth/*", (req, res) => {
+  console.log("🎯 Auth GET route handler:", req.method, req.path);
+  return toNodeHandler(auth)(req, res);
 });
 
-app.get("/api/auth/test", (req, res) => {
-  res.json({
-    message: "Auth test endpoint working!",
-    time: new Date().toISOString(),
-  });
+app.post("/api/auth/*", (req, res) => {
+  console.log("🎯 Auth POST route handler:", req.method, req.path);
+  return toNodeHandler(auth)(req, res);
 });
 
-// API Routes
+app.all("/api/auth/*", (req, res) => {
+  console.log("🎯 Auth ALL route handler:", req.method, req.path);
+  return toNodeHandler(auth)(req, res);
+});
+
 app.use("/api/v1/tutors", tutorRouter);
 app.use("/api/v1/student", studentProfileRouter);
 app.use("/api/v1/categories", categoriesRouter);
@@ -123,28 +139,6 @@ app.get("/", (req, res) => {
     message: "Skill Bridge API is running!",
     time: new Date().toISOString(),
     env: process.env.NODE_ENV,
-  });
-});
-
-app.get("/api/auth/debug", (req, res) => {
-  res.json({
-    message: "Auth debug endpoint working",
-    path: req.path,
-    method: req.method,
-    headers: {
-      origin: req.headers.origin,
-      host: req.headers.host,
-      "user-agent": req.headers["user-agent"],
-      cookie: req.headers.cookie ? "✅ Present" : "❌ Not present",
-    },
-    time: new Date().toISOString(),
-  });
-});
-
-app.get("/test", (req, res) => {
-  res.json({
-    message: "Test endpoint working",
-    time: new Date().toISOString(),
   });
 });
 

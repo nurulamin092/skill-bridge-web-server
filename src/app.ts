@@ -100,6 +100,18 @@ app.get("/api/auth/debug", (req, res) => {
     time: new Date().toISOString(),
   });
 });
+app.get("/api/auth/debug-cookie", (req, res) => {
+  console.log("🔍 Cookie Debug Endpoint Hit");
+  console.log("Full Headers:", JSON.stringify(req.headers, null, 2));
+  console.log("Cookie Header:", req.headers.cookie);
+
+  res.json({
+    message: "Cookie Debug",
+    cookiePresent: !!req.headers.cookie,
+    cookieValue: req.headers.cookie,
+    allHeaders: req.headers,
+  });
+});
 
 app.get("/test", (req, res) => {
   res.json({

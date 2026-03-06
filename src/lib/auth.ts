@@ -39,7 +39,7 @@ export const auth = betterAuth({
   advanced: {
     cookies: {
       session_token: {
-        name: "__Secure-better-auth.session_token",
+        name: "better-auth.session_token",
         attributes: {
           httpOnly: true,
           secure: true,

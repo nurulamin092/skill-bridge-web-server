@@ -23,12 +23,6 @@ export const auth = betterAuth({
     "https://skill-bridge-web-client.vercel.app",
     "http://localhost:3000",
   ],
-  // endpoints: {
-  //   signUp: "/api/auth/sign-up",
-  //   signIn: "/api/auth/sign-in",
-  //   signOut: "/api/auth/sign-out",
-  //   session: "/api/auth/session",
-  // },
 
   emailAndPassword: {
     enabled: true,
@@ -41,14 +35,11 @@ export const auth = betterAuth({
       maxAge: 5 * 60,
     },
     cookie: {
-      name: "better-auth.session_token",
+      name: "__Secure-better-auth.session_token",
       secure: true,
       sameSite: "none",
       path: "/",
-      domain:
-        process.env.NODE_ENV === "production" ? ".onrender.com" : undefined,
       httpOnly: true,
-
       maxAge: 7 * 24 * 60 * 60 * 1000,
     },
   },

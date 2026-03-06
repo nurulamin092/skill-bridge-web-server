@@ -1,8 +1,9 @@
-import express, { Application, Request, Response } from "express";
+import express, { Application, Request, Response, NextFunction } from "express";
 import { toNodeHandler } from "better-auth/node";
+import cors from "cors";
+
 import { auth } from "./lib/auth";
 import { errorHandler } from "./middleware/globalErrorHandler";
-import cors from "cors";
 import verifyEmailRoute from "./modules/auth/verify-email.route";
 
 import { tutorRouter } from "./modules/tutor/tutor.router";
@@ -26,102 +27,66 @@ app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
+
       if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
         return callback(null, true);
       }
+
+      console.warn("❌ Blocked by CORS:", origin);
       return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: [
-      "Content-Type",
-      "Authorization",
-      "X-Requested-With",
-      "Accept",
-      "Origin",
-    ],
-    exposedHeaders: ["set-cookie"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
 
-app.use(express.json());
+app.options("*", cors());
 
-app.use((req, res, next) => {
-  console.log(`📨 ${req.method} ${req.path}`);
-  console.log("🔍 Headers:", {
-    origin: req.headers.origin,
-    cookie: req.headers.cookie ? "✅ Present" : "❌ Not present",
-  });
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true }));
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+  console.log("================================");
+  console.log(`📨 ${req.method} ${req.originalUrl}`);
+  console.log("🌍 Origin:", req.headers.origin || "No origin");
+  console.log(
+    "🍪 Cookie:",
+    req.headers.cookie ? "✅ Present" : "❌ Not present",
+  );
+  console.log("================================");
   next();
 });
 
-app.get("/test", (req, res) => {
+app.all("/api/auth/*", toNodeHandler(auth));
+
+app.get("/test", (req: Request, res: Response) => {
   res.json({
+    success: true,
     message: "Test endpoint working",
     time: new Date().toISOString(),
   });
 });
 
-app.get("/api/auth/test", (req, res) => {
+app.get("/api/auth/test", (req: Request, res: Response) => {
   console.log("📌 Direct auth test hit");
+
   res.json({
+    success: true,
     message: "Direct auth test working!",
     time: new Date().toISOString(),
   });
 });
 
-app.get("/api/auth/debug", (req, res) => {
-  console.log("📌 Direct debug hit");
+app.get("/api/auth/debug", (req: Request, res: Response) => {
+  console.log("📌 Debug endpoint hit");
+
   res.json({
-    message: "Direct debug working",
+    success: true,
     cookies: req.headers.cookie || "No cookies",
-    headers: req.headers,
+    origin: req.headers.origin,
+    userAgent: req.headers["user-agent"],
   });
-});
-
-app.get("/api/auth/debug-cookie", (req, res) => {
-  console.log("🔍 Cookie Debug Endpoint Hit");
-  console.log("Cookie Header:", req.headers.cookie);
-  res.json({
-    message: "Cookie Debug",
-    cookiePresent: !!req.headers.cookie,
-    cookieValue: req.headers.cookie,
-    headers: {
-      origin: req.headers.origin,
-      host: req.headers.host,
-      "user-agent": req.headers["user-agent"],
-    },
-  });
-});
-
-app.post("/api/auth/sign-in/email", (req, res) => {
-  console.log("🔐 Sign-in endpoint hit");
-  return toNodeHandler(auth)(req, res);
-});
-
-app.get("/api/auth/get-session", (req, res) => {
-  console.log("🔐 Get-session endpoint hit");
-  return toNodeHandler(auth)(req, res);
-});
-
-app.post("/api/auth/sign-out", (req, res) => {
-  console.log("🔐 Sign-out endpoint hit");
-  return toNodeHandler(auth)(req, res);
-});
-
-app.get("/api/auth/*", (req, res) => {
-  console.log("🎯 Auth GET route handler:", req.method, req.path);
-  return toNodeHandler(auth)(req, res);
-});
-
-app.post("/api/auth/*", (req, res) => {
-  console.log("🎯 Auth POST route handler:", req.method, req.path);
-  return toNodeHandler(auth)(req, res);
-});
-
-app.all("/api/auth/*", (req, res) => {
-  console.log("🎯 Auth ALL route handler:", req.method, req.path);
-  return toNodeHandler(auth)(req, res);
 });
 
 app.use("/api/v1/tutors", tutorRouter);
@@ -134,15 +99,17 @@ app.use("/api/v1/reviews", reviewRouter);
 app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/auth", authRouter);
 
-app.get("/", (req, res) => {
+app.use(verifyEmailRoute);
+
+app.get("/", (req: Request, res: Response) => {
   res.json({
+    success: true,
     message: "Skill Bridge API is running!",
+    environment: process.env.NODE_ENV,
     time: new Date().toISOString(),
-    env: process.env.NODE_ENV,
   });
 });
 
-app.use(verifyEmailRoute);
 app.use(errorHandler);
 
 export default app;

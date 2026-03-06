@@ -29,21 +29,26 @@ export const auth = betterAuth({
     autoSignIn: true,
     requireEmailVerification: true,
   },
-  // session: {
-  //   cookieCache: {
-  //     enabled: true,
-  //     maxAge: 5 * 60,
-  //   },
-  //   cookie: {
-  //     name: "__Secure-better-auth.session_token",
-  //     secure: true,
-  //     sameSite: "none",
-  //     path: "/",
-  //     httpOnly: true,
-  //     maxAge: 7 * 24 * 60 * 60 * 1000,
-  //   },
-  // },
+  session: {
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60,
+    },
+  },
 
+  advanced: {
+    cookies: {
+      session_token: {
+        name: "__Secure-better-auth.session_token",
+        attributes: {
+          httpOnly: true,
+          secure: true,
+          sameSite: "none",
+          path: "/",
+        },
+      },
+    },
+  },
   emailVerification: {
     sendOnSignUp: true,
     autoSignInAfterVerification: true,

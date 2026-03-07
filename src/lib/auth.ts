@@ -284,7 +284,6 @@ export const auth = betterAuth({
     requireEmailVerification: true,
   },
 
-  // ✅ session config
   session: {
     cookieCache: { enabled: true, maxAge: 5 * 60 },
   },
@@ -292,12 +291,11 @@ export const auth = betterAuth({
   advanced: {
     cookies: {
       session_token: {
-        // Better Auth will auto add __Secure- in production HTTPS
         name: "better-auth.session_token",
         attributes: {
           httpOnly: true,
           secure: true,
-          sameSite: "none",
+          sameSite: "lax",
           path: "/",
         },
       },

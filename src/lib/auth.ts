@@ -259,7 +259,6 @@ import { prisma } from "./prisma";
 import nodemailer from "nodemailer";
 import { Role } from "../../generated/prisma/enums";
 
-// Nodemailer setup
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 587,
@@ -272,10 +271,12 @@ const transporter = nodemailer.createTransport({
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, { provider: "postgresql" }),
+
   baseURL: process.env.BETTER_AUTH_URL || "http://localhost:5000",
+
   trustedOrigins: [
-    "https://skill-bridge-web-client.vercel.app",
     "http://localhost:3000",
+    "https://skill-bridge-web-client.vercel.app",
   ],
 
   emailAndPassword: {
@@ -285,7 +286,10 @@ export const auth = betterAuth({
   },
 
   session: {
-    cookieCache: { enabled: true, maxAge: 5 * 60 },
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60,
+    },
   },
 
   advanced: {
@@ -305,12 +309,14 @@ export const auth = betterAuth({
   emailVerification: {
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
-    sendVerificationEmail: async ({ user, url, token }) => {
+
+    sendVerificationEmail: async ({ user, token }) => {
       const verificationUrl = `${process.env.APP_URL}/verify-email?token=${token}`;
+
       await transporter.sendMail({
         from: process.env.EMAIL_FROM,
         to: user.email,
-        subject: "Please verify your email",
+        subject: "Verify your email",
         html: `<a href="${verificationUrl}">Verify Email</a>`,
       });
     },
@@ -334,8 +340,15 @@ export const auth = betterAuth({
         required: true,
         input: true,
       },
-      phone: { type: "string", required: false },
-      isBanned: { type: "boolean", defaultValue: false, required: true },
+      phone: {
+        type: "string",
+        required: false,
+      },
+      isBanned: {
+        type: "boolean",
+        defaultValue: false,
+        required: true,
+      },
     },
   },
 
@@ -344,12 +357,19 @@ export const auth = betterAuth({
       create: {
         async before(user) {
           const allowedRole: Role[] = [Role.STUDENT, Role.TUTOR];
+
           const role =
             (user.role as string)?.toUpperCase() &&
             allowedRole.includes((user.role as string).toUpperCase() as Role)
               ? (user.role as string).toUpperCase()
               : Role.STUDENT;
-          return { data: { ...user, role } };
+
+          return {
+            data: {
+              ...user,
+              role,
+            },
+          };
         },
       },
     },

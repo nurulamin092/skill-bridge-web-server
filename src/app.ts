@@ -4,6 +4,7 @@ import cors from "cors";
 
 import { auth } from "./lib/auth";
 import { errorHandler } from "./middleware/globalErrorHandler";
+
 import verifyEmailRoute from "./modules/auth/verify-email.route";
 
 import { tutorRouter } from "./modules/tutor/tutor.router";
@@ -17,6 +18,12 @@ import { studentProfileRouter } from "./modules/student-profile/student-profile.
 import { tutorProfileRouter } from "./modules/tutor-profile/tutor-profile.router";
 
 const app: Application = express();
+
+/*
+|--------------------------------------------------------------------------
+| CORS CONFIG
+|--------------------------------------------------------------------------
+*/
 
 const allowedOrigins = [
   "http://localhost:3000",
@@ -36,15 +43,25 @@ app.use(
       return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
 
 app.options("*", cors());
 
+/*
+|--------------------------------------------------------------------------
+| BODY PARSER
+|--------------------------------------------------------------------------
+*/
+
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
+
+/*
+|--------------------------------------------------------------------------
+| DEBUG LOGGER
+|--------------------------------------------------------------------------
+*/
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   console.log("================================");
@@ -58,7 +75,19 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
+/*
+|--------------------------------------------------------------------------
+| BETTER AUTH ROUTE
+|--------------------------------------------------------------------------
+*/
+
 app.all("/api/auth/*", toNodeHandler(auth));
+
+/*
+|--------------------------------------------------------------------------
+| DEBUG ROUTES
+|--------------------------------------------------------------------------
+*/
 
 app.get("/test", (req: Request, res: Response) => {
   res.json({
@@ -68,19 +97,7 @@ app.get("/test", (req: Request, res: Response) => {
   });
 });
 
-app.get("/api/auth/test", (req: Request, res: Response) => {
-  console.log("📌 Direct auth test hit");
-
-  res.json({
-    success: true,
-    message: "Direct auth test working!",
-    time: new Date().toISOString(),
-  });
-});
-
 app.get("/api/auth/debug", (req: Request, res: Response) => {
-  console.log("📌 Debug endpoint hit");
-
   res.json({
     success: true,
     cookies: req.headers.cookie || "No cookies",
@@ -88,6 +105,12 @@ app.get("/api/auth/debug", (req: Request, res: Response) => {
     userAgent: req.headers["user-agent"],
   });
 });
+
+/*
+|--------------------------------------------------------------------------
+| API ROUTES
+|--------------------------------------------------------------------------
+*/
 
 app.use("/api/v1/tutors", tutorRouter);
 app.use("/api/v1/student", studentProfileRouter);
@@ -109,6 +132,12 @@ app.get("/", (req: Request, res: Response) => {
     time: new Date().toISOString(),
   });
 });
+
+/*
+|--------------------------------------------------------------------------
+| GLOBAL ERROR HANDLER
+|--------------------------------------------------------------------------
+*/
 
 app.use(errorHandler);
 

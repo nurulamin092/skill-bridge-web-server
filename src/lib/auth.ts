@@ -299,7 +299,7 @@ export const auth = betterAuth({
         attributes: {
           httpOnly: true,
           secure: true,
-          sameSite: "lax",
+          sameSite: "none",
           path: "/",
         },
       },

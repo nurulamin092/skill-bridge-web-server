@@ -18,16 +18,12 @@ import { studentProfileRouter } from "./modules/student-profile/student-profile.
 import { tutorProfileRouter } from "./modules/tutor-profile/tutor-profile.router";
 
 const app: Application = express();
-
-/*
-|--------------------------------------------------------------------------
-| CORS CONFIG
-|--------------------------------------------------------------------------
-*/
+app.set("trust proxy", 1);
 
 const allowedOrigins = [
   "http://localhost:3000",
   "https://skill-bridge-web-client.vercel.app",
+  "https://*.vercel.app",
 ];
 
 app.use(
@@ -46,22 +42,8 @@ app.use(
   }),
 );
 
-app.options("*", cors());
-
-/*
-|--------------------------------------------------------------------------
-| BODY PARSER
-|--------------------------------------------------------------------------
-*/
-
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
-
-/*
-|--------------------------------------------------------------------------
-| DEBUG LOGGER
-|--------------------------------------------------------------------------
-*/
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   console.log("================================");
@@ -75,19 +57,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-/*
-|--------------------------------------------------------------------------
-| BETTER AUTH ROUTE
-|--------------------------------------------------------------------------
-*/
-
 app.all("/api/auth/*", toNodeHandler(auth));
-
-/*
-|--------------------------------------------------------------------------
-| DEBUG ROUTES
-|--------------------------------------------------------------------------
-*/
 
 app.get("/test", (req: Request, res: Response) => {
   res.json({
@@ -105,12 +75,6 @@ app.get("/api/auth/debug", (req: Request, res: Response) => {
     userAgent: req.headers["user-agent"],
   });
 });
-
-/*
-|--------------------------------------------------------------------------
-| API ROUTES
-|--------------------------------------------------------------------------
-*/
 
 app.use("/api/v1/tutors", tutorRouter);
 app.use("/api/v1/student", studentProfileRouter);
@@ -132,12 +96,6 @@ app.get("/", (req: Request, res: Response) => {
     time: new Date().toISOString(),
   });
 });
-
-/*
-|--------------------------------------------------------------------------
-| GLOBAL ERROR HANDLER
-|--------------------------------------------------------------------------
-*/
 
 app.use(errorHandler);
 

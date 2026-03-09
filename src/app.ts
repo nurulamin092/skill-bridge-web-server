@@ -23,7 +23,6 @@ app.set("trust proxy", 1);
 const allowedOrigins = [
   "http://localhost:3000",
   "https://skill-bridge-web-client.vercel.app",
-  "https://*.vercel.app",
 ];
 
 app.use(
@@ -31,7 +30,7 @@ app.use(
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
 
-      if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
+      if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
 
@@ -59,6 +58,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 app.all("/api/auth/*", toNodeHandler(auth));
 
+// Test endpoint
 app.get("/test", (req: Request, res: Response) => {
   res.json({
     success: true,
@@ -76,6 +76,7 @@ app.get("/api/auth/debug", (req: Request, res: Response) => {
   });
 });
 
+// API Routes
 app.use("/api/v1/tutors", tutorRouter);
 app.use("/api/v1/student", studentProfileRouter);
 app.use("/api/v1/categories", categoriesRouter);

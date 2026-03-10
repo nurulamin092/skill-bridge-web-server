@@ -292,29 +292,42 @@ export const auth = betterAuth({
     },
   },
 
+  // advanced: {
+  //   cookies: {
+  //     session_token: {
+  //       name: "better-auth.session_token",
+  //       attributes: {
+  //         httpOnly: true,
+  //         secure: process.env.NODE_ENV === "production",
+  //         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  //         path: "/",
+  //       },
+  //     },
+  //     session_data: {
+  //       name: "better-auth.session_data",
+  //       attributes: {
+  //         httpOnly: true,
+  //         secure: process.env.NODE_ENV === "production",
+  //         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  //         path: "/",
+  //       },
+  //     },
+  //   },
+  // },
+
   advanced: {
     cookies: {
       session_token: {
         name: "better-auth.session_token",
         attributes: {
           httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+          secure: true,
+          sameSite: "none",
           path: "/",
         },
       },
-      // session_data: {
-      //   name: "better-auth.session_data",
-      //   attributes: {
-      //     httpOnly: true,
-      //     secure: process.env.NODE_ENV === "production",
-      //     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      //     path: "/",
-      //   },
-      // },
     },
   },
-
   emailVerification: {
     sendOnSignUp: true,
     autoSignInAfterVerification: true,

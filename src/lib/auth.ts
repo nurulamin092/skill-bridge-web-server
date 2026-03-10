@@ -253,6 +253,151 @@
 //   },
 // });
 
+// import { betterAuth } from "better-auth";
+// import { prismaAdapter } from "better-auth/adapters/prisma";
+// import { prisma } from "./prisma";
+// import nodemailer from "nodemailer";
+// import { Role } from "../../generated/prisma/enums";
+
+// const transporter = nodemailer.createTransport({
+//   host: "smtp.gmail.com",
+//   port: 587,
+//   secure: false,
+//   auth: {
+//     user: process.env.APP_USER,
+//     pass: process.env.APP_PASS,
+//   },
+// });
+
+// export const auth = betterAuth({
+//   database: prismaAdapter(prisma, { provider: "postgresql" }),
+
+//   baseURL: process.env.BETTER_AUTH_URL || "http://localhost:5000",
+
+//   trustedOrigins: [
+//     "http://localhost:3000",
+//     "https://skill-bridge-web-client.vercel.app",
+//   ],
+
+//   emailAndPassword: {
+//     enabled: true,
+//     autoSignIn: true,
+//     requireEmailVerification: true,
+//   },
+
+//   session: {
+//     cookieCache: {
+//       enabled: true,
+//       maxAge: 5 * 60,
+//     },
+//   },
+
+//   // advanced: {
+//   //   cookies: {
+//   //     session_token: {
+//   //       name: "better-auth.session_token",
+//   //       attributes: {
+//   //         httpOnly: true,
+//   //         secure: process.env.NODE_ENV === "production",
+//   //         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+//   //         path: "/",
+//   //       },
+//   //     },
+//   //     session_data: {
+//   //       name: "better-auth.session_data",
+//   //       attributes: {
+//   //         httpOnly: true,
+//   //         secure: process.env.NODE_ENV === "production",
+//   //         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+//   //         path: "/",
+//   //       },
+//   //     },
+//   //   },
+//   // },
+
+//   advanced: {
+//     cookies: {
+//       session_token: {
+//         name: "better-auth.session_token",
+//         attributes: {
+//           httpOnly: true,
+//           secure: process.env.NODE_ENV === "production",
+//           sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+//           path: "/",
+//         },
+//       },
+//     },
+//   },
+//   emailVerification: {
+//     sendOnSignUp: true,
+//     autoSignInAfterVerification: true,
+
+//     sendVerificationEmail: async ({ user, token }) => {
+//       const verificationUrl = `${process.env.APP_URL}/verify-email?token=${token}`;
+
+//       await transporter.sendMail({
+//         from: process.env.EMAIL_FROM,
+//         to: user.email,
+//         subject: "Verify your email",
+//         html: `<a href="${verificationUrl}">Verify Email</a>`,
+//       });
+//     },
+//   },
+
+//   socialProviders: {
+//     google: {
+//       prompt: "select_account consent",
+//       accessType: "offline",
+//       clientId: process.env.GOOGLE_CLIENT_ID as string,
+//       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+//     },
+//   },
+
+//   user: {
+//     modelName: "User",
+//     additionalFields: {
+//       role: {
+//         type: "string",
+//         defaultValue: "STUDENT",
+//         required: true,
+//         input: true,
+//       },
+//       phone: {
+//         type: "string",
+//         required: false,
+//       },
+//       isBanned: {
+//         type: "boolean",
+//         defaultValue: false,
+//         required: true,
+//       },
+//     },
+//   },
+
+//   databaseHooks: {
+//     user: {
+//       create: {
+//         async before(user) {
+//           const allowedRole: Role[] = [Role.STUDENT, Role.TUTOR];
+
+//           const role =
+//             (user.role as string)?.toUpperCase() &&
+//             allowedRole.includes((user.role as string).toUpperCase() as Role)
+//               ? (user.role as string).toUpperCase()
+//               : Role.STUDENT;
+
+//           return {
+//             data: {
+//               ...user,
+//               role,
+//             },
+//           };
+//         },
+//       },
+//     },
+//   },
+// });
+
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./prisma";
@@ -292,29 +437,6 @@ export const auth = betterAuth({
     },
   },
 
-  // advanced: {
-  //   cookies: {
-  //     session_token: {
-  //       name: "better-auth.session_token",
-  //       attributes: {
-  //         httpOnly: true,
-  //         secure: process.env.NODE_ENV === "production",
-  //         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-  //         path: "/",
-  //       },
-  //     },
-  //     session_data: {
-  //       name: "better-auth.session_data",
-  //       attributes: {
-  //         httpOnly: true,
-  //         secure: process.env.NODE_ENV === "production",
-  //         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-  //         path: "/",
-  //       },
-  //     },
-  //   },
-  // },
-
   advanced: {
     cookies: {
       session_token: {
@@ -328,6 +450,7 @@ export const auth = betterAuth({
       },
     },
   },
+
   emailVerification: {
     sendOnSignUp: true,
     autoSignInAfterVerification: true,

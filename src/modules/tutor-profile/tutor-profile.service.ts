@@ -4,7 +4,7 @@ import { ApiError } from "../../utils/apiError";
 import { requireRole } from "../../utils/requireRole";
 
 const createTutorProfile = async (req: any) => {
-  const user = requireRole(req, Role.TUTOR);
+  const user = requireRole(req, Role.STUDENT);
   const { bio, hourlyRate, experience, categoryIds } = req.body;
 
   if (!hourlyRate || hourlyRate <= 0) {
@@ -48,6 +48,12 @@ const createTutorProfile = async (req: any) => {
         tutorId: tutorProfile.id,
         categoryId,
       })),
+    });
+    await tx.user.update({
+      where: { id: user.id },
+      data: {
+        role: Role.TUTOR,
+      },
     });
     return tutorProfile;
   });

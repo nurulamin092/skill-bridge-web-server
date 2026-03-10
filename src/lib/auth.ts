@@ -303,15 +303,15 @@ export const auth = betterAuth({
           path: "/",
         },
       },
-      session_data: {
-        name: "better-auth.session_data",
-        attributes: {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-          path: "/",
-        },
-      },
+      // session_data: {
+      //   name: "better-auth.session_data",
+      //   attributes: {
+      //     httpOnly: true,
+      //     secure: process.env.NODE_ENV === "production",
+      //     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      //     path: "/",
+      //   },
+      // },
     },
   },
 

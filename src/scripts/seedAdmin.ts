@@ -12,7 +12,6 @@ async function seedAdmin() {
       password: "Pass@3097",
     };
 
-    // check user exist on db or not
     const existingUser = await prisma.user.findUnique({
       where: {
         email: adminData.email,
